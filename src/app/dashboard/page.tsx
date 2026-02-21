@@ -1,22 +1,29 @@
 
+"use client"
+
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { Footprints, Flame, Target, ChevronRight, Activity, TrendingDown } from "lucide-react"
+import { Flame, Target, ChevronRight, Activity, TrendingDown, Zap } from "lucide-react"
 import Link from "next/link"
+import { useUser } from "@/firebase"
 
 export default function Dashboard() {
+  const { user } = useUser()
+
   return (
     <div className="min-h-screen bg-background pb-20 rtl">
       <header className="p-6 bg-white shadow-sm sticky top-0 z-10">
         <div className="flex justify-between items-center">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-            <span className="font-bold text-primary">أ</span>
+          <div className="flex items-center gap-2">
+             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+               <Zap className="h-4 w-4 text-primary fill-primary" />
+             </div>
+             <span className="text-sm font-bold">🔥 3</span>
           </div>
           <div className="text-right">
-            <h1 className="text-xl font-bold font-headline">صباح الخير، أحمد</h1>
-            <p className="text-xs text-muted-foreground">الاثنين، 15 أكتوبر</p>
+            <h1 className="text-xl font-bold font-headline">صباح الخير، {user?.displayName || 'أحمد'}</h1>
+            <p className="text-[10px] text-muted-foreground">الاثنين، 15 أكتوبر</p>
           </div>
         </div>
       </header>
@@ -55,23 +62,23 @@ export default function Dashboard() {
         {/* Nutrition Summary */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="border-none shadow-sm">
-            <CardContent className="p-4 flex flex-col items-end gap-2">
+            <CardContent className="p-4 flex flex-col items-end gap-2 text-right">
               <div className="p-2 bg-orange-100 rounded-lg text-orange-600">
                 <Flame className="h-5 w-5" />
               </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">سعرات مستهلكة</p>
+              <div>
+                <p className="text-[10px] text-muted-foreground">سعرات مستهلكة</p>
                 <p className="text-lg font-bold">1,200</p>
               </div>
             </CardContent>
           </Card>
           <Card className="border-none shadow-sm">
-            <CardContent className="p-4 flex flex-col items-end gap-2">
+            <CardContent className="p-4 flex flex-col items-end gap-2 text-right">
               <div className="p-2 bg-teal-100 rounded-lg text-teal-600">
                 <Target className="h-5 w-5" />
               </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">المتبقي</p>
+              <div>
+                <p className="text-[10px] text-muted-foreground">المتبقي</p>
                 <p className="text-lg font-bold">650</p>
               </div>
             </CardContent>
@@ -81,16 +88,18 @@ export default function Dashboard() {
         {/* Current Workout Status */}
         <Card className="border-none shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between p-4 pb-2">
-            <Button variant="ghost" size="sm" className="text-primary gap-1">
-              مشاهدة الكل <ChevronRight className="h-4 w-4" />
-            </Button>
+            <Link href="/workouts">
+              <Button variant="ghost" size="sm" className="text-primary gap-1">
+                مشاهدة الكل <ChevronRight className="h-4 w-4" />
+              </Button>
+            </Link>
             <CardTitle className="text-sm font-bold">برنامج 30 يوم</CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="flex items-center gap-4 bg-muted/30 p-4 rounded-xl">
               <div className="flex-1 text-right">
-                <p className="font-bold">اليوم الرابع: كارديو مكثف</p>
-                <p className="text-xs text-muted-foreground">30 دقيقة • 12 تمرين</p>
+                <p className="font-bold text-sm">اليوم الرابع: كارديو مكثف</p>
+                <p className="text-[10px] text-muted-foreground">30 دقيقة • 12 تمرين</p>
               </div>
               <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white">
                 <Activity className="h-6 w-6" />
@@ -102,33 +111,11 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Weight Tracker Graph Mock */}
-        <Card className="border-none shadow-sm">
-          <CardHeader className="p-4 pb-2 text-right">
-            <CardTitle className="text-sm font-bold">متابعة الوزن</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="h-32 flex items-end gap-2">
-               {[40, 60, 45, 70, 55, 65, 50].map((h, i) => (
-                 <div key={i} className="flex-1 bg-primary/20 rounded-t-sm relative group">
-                    <div className="absolute bottom-0 w-full bg-primary rounded-t-sm transition-all duration-500" style={{ height: `${h}%` }}></div>
-                 </div>
-               ))}
-            </div>
-            <div className="flex justify-between mt-4 items-center">
-              <div className="flex items-center gap-1 text-emerald-600 text-xs font-bold">
-                <TrendingDown className="h-4 w-4" /> -1.2 كجم هذا الأسبوع
-              </div>
-              <p className="text-xs text-muted-foreground">آخر تحديث: أمس</p>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* AI Tip */}
         <div className="bg-secondary/10 border border-secondary/20 p-4 rounded-2xl flex gap-3 items-start">
           <div className="flex-1 text-right">
-            <p className="text-xs font-bold text-secondary mb-1">نصيحة المساعد الذكي</p>
-            <p className="text-sm">"أنت قريب جداً من تحقيق هدف خطواتك اليوم! المشي لـ 10 دقائق إضافية سيجعلك تصل."</p>
+            <p className="text-[10px] font-bold text-secondary mb-1">نصيحة المساعد الذكي</p>
+            <p className="text-xs">"أنت تبلي حسناً في الحفاظ على الـ Streak! تمرين اليوم سيرفع لياقتك القلبية بشكل ملحوظ."</p>
           </div>
           <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white text-[10px] font-bold">AI</div>
         </div>
