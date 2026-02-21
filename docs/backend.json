@@ -1,0 +1,752 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Stores core information about a user, including their physical attributes, fitness goals, and preferences.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "age": {
+          "type": "number",
+          "description": "The user's age in years."
+        },
+        "weightKg": {
+          "type": "number",
+          "description": "The user's baseline weight in kilograms, recorded during onboarding."
+        },
+        "heightCm": {
+          "type": "number",
+          "description": "The user's height in centimeters, used to calculate BMI."
+        },
+        "gender": {
+          "type": "string",
+          "description": "The user's gender (e.g., 'ذكر', 'أنثى')."
+        },
+        "goal": {
+          "type": "string",
+          "description": "The user's primary fitness goal (e.g., 'خسارة وزن', 'بناء عضل', 'الحفاظ على اللياقة')."
+        },
+        "activityLevel": {
+          "type": "string",
+          "description": "The user's current activity level (e.g., 'مبتدئ', 'متوسط', 'متقدم')."
+        },
+        "weeklyWorkoutFrequency": {
+          "type": "number",
+          "description": "The desired number of workout days per week."
+        },
+        "preferredSports": {
+          "type": "array",
+          "description": "A list of sports the user prefers (e.g., 'مشي', 'جري', 'سباحة', 'صالة', 'يوغا').",
+          "items": {
+            "type": "string"
+          }
+        },
+        "healthRestrictions": {
+          "type": "string",
+          "description": "Notes on any injuries or health restrictions the user may have."
+        },
+        "bmi": {
+          "type": "number",
+          "description": "The user's Body Mass Index, calculated from height and weight."
+        },
+        "tdee": {
+          "type": "number",
+          "description": "The user's Total Daily Energy Expenditure, representing ideal daily calories."
+        },
+        "userWorkoutProgressId": {
+          "type": "string",
+          "description": "Reference to the user's current workout program progress. (Relationship: UserProfile 1:1 UserWorkoutProgress)"
+        }
+      },
+      "required": [
+        "id",
+        "age",
+        "weightKg",
+        "heightCm",
+        "gender",
+        "goal",
+        "activityLevel",
+        "weeklyWorkoutFrequency",
+        "preferredSports",
+        "healthRestrictions",
+        "bmi",
+        "tdee",
+        "userWorkoutProgressId"
+      ]
+    },
+    "UserDailyLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserDailyLog",
+      "type": "object",
+      "description": "Records a user's daily activities, including steps, calories burned, and workout status.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserDailyLog entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the UserProfile this log belongs to. (Relationship: UserProfile 1:N UserDailyLog)"
+        },
+        "date": {
+          "type": "string",
+          "description": "The calendar date for this daily log.",
+          "format": "date"
+        },
+        "totalSteps": {
+          "type": "number",
+          "description": "The total number of steps recorded for the day."
+        },
+        "totalDistanceKm": {
+          "type": "number",
+          "description": "The total distance walked/run in kilometers for the day."
+        },
+        "totalCaloriesBurned": {
+          "type": "number",
+          "description": "The total calories burned through activity for the day."
+        },
+        "mealLogIds": {
+          "type": "array",
+          "description": "References to MealLog entities recorded for this day. (Relationship: UserDailyLog 1:N MealLog)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workoutCompleted": {
+          "type": "boolean",
+          "description": "Indicates if the user completed their workout for this day."
+        },
+        "workoutDurationMinutes": {
+          "type": "number",
+          "description": "The duration of the completed workout in minutes for the day."
+        },
+        "stepRoutePointIds": {
+          "type": "array",
+          "description": "References to StepRoutePoint entities detailing the user's path. (Relationship: UserDailyLog 1:N StepRoutePoint)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "date",
+        "totalSteps",
+        "totalDistanceKm",
+        "totalCaloriesBurned",
+        "mealLogIds",
+        "workoutCompleted",
+        "workoutDurationMinutes",
+        "stepRoutePointIds"
+      ]
+    },
+    "StepRoutePoint": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StepRoutePoint",
+      "type": "object",
+      "description": "Represents a geographical coordinate and timestamp captured during a user's walking activity.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StepRoutePoint entity."
+        },
+        "userDailyLogId": {
+          "type": "string",
+          "description": "Reference to the UserDailyLog this route point belongs to. (Relationship: UserDailyLog 1:N StepRoutePoint)"
+        },
+        "latitude": {
+          "type": "number",
+          "description": "The latitude coordinate of the route point."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "The longitude coordinate of the route point."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The UTC timestamp when this route point was recorded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userDailyLogId",
+        "latitude",
+        "longitude",
+        "timestamp"
+      ]
+    },
+    "MealLog": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MealLog",
+      "type": "object",
+      "description": "Records details of a meal consumed by a user, including estimated calories and components.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MealLog entity."
+        },
+        "userDailyLogId": {
+          "type": "string",
+          "description": "Reference to the UserDailyLog this meal belongs to. (Relationship: UserDailyLog 1:N MealLog)"
+        },
+        "time": {
+          "type": "string",
+          "description": "The UTC timestamp when the meal was consumed.",
+          "format": "date-time"
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the image taken of the meal.",
+          "format": "uri"
+        },
+        "totalCalories": {
+          "type": "number",
+          "description": "The total estimated calories for the entire meal."
+        },
+        "mealItemIds": {
+          "type": "array",
+          "description": "References to individual MealItem entities identified in this meal. (Relationship: MealLog 1:N MealItem)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userDailyLogId",
+        "time",
+        "imageUrl",
+        "totalCalories",
+        "mealItemIds"
+      ]
+    },
+    "MealItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MealItem",
+      "type": "object",
+      "description": "Represents a single food item identified within a meal, with its nutritional estimations.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MealItem entity."
+        },
+        "mealLogId": {
+          "type": "string",
+          "description": "Reference to the MealLog this item belongs to. (Relationship: MealLog 1:N MealItem)"
+        },
+        "nameAr": {
+          "type": "string",
+          "description": "The Arabic name of the identified food item."
+        },
+        "estimatedPortion": {
+          "type": "string",
+          "description": "Estimated portion size of the food item."
+        },
+        "calories": {
+          "type": "number",
+          "description": "Estimated calories for this specific food item."
+        },
+        "proteinGrams": {
+          "type": "number",
+          "description": "Estimated protein content in grams for this food item."
+        },
+        "carbsGrams": {
+          "type": "number",
+          "description": "Estimated carbohydrate content in grams for this food item."
+        },
+        "fatsGrams": {
+          "type": "number",
+          "description": "Estimated fat content in grams for this food item."
+        }
+      },
+      "required": [
+        "id",
+        "mealLogId",
+        "nameAr",
+        "estimatedPortion",
+        "calories",
+        "proteinGrams",
+        "carbsGrams",
+        "fatsGrams"
+      ]
+    },
+    "WeightEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WeightEntry",
+      "type": "object",
+      "description": "Records a user's weight measurement on a specific date.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the WeightEntry entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the UserProfile this weight entry belongs to. (Relationship: UserProfile 1:N WeightEntry)"
+        },
+        "date": {
+          "type": "string",
+          "description": "The date when the weight was recorded.",
+          "format": "date"
+        },
+        "weightKg": {
+          "type": "number",
+          "description": "The recorded weight in kilograms."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "date",
+        "weightKg"
+      ]
+    },
+    "WorkoutProgramTemplate": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WorkoutProgramTemplate",
+      "type": "object",
+      "description": "Defines a standardized 30-day workout program template (e.g., 'Beginner', 'Intermediate').",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the WorkoutProgramTemplate entity."
+        },
+        "nameAr": {
+          "type": "string",
+          "description": "The Arabic name of the program template (e.g., 'برنامج المبتدئين 30 يوم')."
+        },
+        "level": {
+          "type": "string",
+          "description": "The difficulty level of the program template (e.g., 'beginner', 'intermediate', 'advanced')."
+        },
+        "programDayIds": {
+          "type": "array",
+          "description": "Ordered references to ProgramDay entities that constitute this program template. (Relationship: WorkoutProgramTemplate 1:N ProgramDay)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "nameAr",
+        "level",
+        "programDayIds"
+      ]
+    },
+    "ProgramDay": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ProgramDay",
+      "type": "object",
+      "description": "Defines the structure and content of a single day within a WorkoutProgramTemplate.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ProgramDay entity."
+        },
+        "programTemplateId": {
+          "type": "string",
+          "description": "Reference to the WorkoutProgramTemplate this day belongs to. (Relationship: WorkoutProgramTemplate 1:N ProgramDay)"
+        },
+        "dayNumber": {
+          "type": "number",
+          "description": "The sequential day number within the 30-day program (1-30)."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of day (e.g., 'workout', 'active_rest', 'full_rest')."
+        },
+        "descriptionAr": {
+          "type": "string",
+          "description": "A description for the day, especially for rest days (e.g., 'راحة نشطة — مشي 15 دقيقة')."
+        },
+        "programDayExerciseIds": {
+          "type": "array",
+          "description": "Ordered references to ProgramDayExercise entities for this day. (Relationship: ProgramDay 1:N ProgramDayExercise)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "programTemplateId",
+        "dayNumber",
+        "type",
+        "programDayExerciseIds"
+      ]
+    },
+    "ProgramDayExercise": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ProgramDayExercise",
+      "type": "object",
+      "description": "Defines how a specific exercise is to be performed on a particular ProgramDay.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ProgramDayExercise entity."
+        },
+        "programDayId": {
+          "type": "string",
+          "description": "Reference to the ProgramDay this exercise instruction belongs to. (Relationship: ProgramDay 1:N ProgramDayExercise)"
+        },
+        "exerciseId": {
+          "type": "string",
+          "description": "Reference to the generic Exercise entity. (Relationship: Exercise 1:N ProgramDayExercise)"
+        },
+        "order": {
+          "type": "number",
+          "description": "The sequential order of this exercise within the ProgramDay."
+        },
+        "sets": {
+          "type": "number",
+          "description": "The number of sets for this exercise on this day."
+        },
+        "repsOrDuration": {
+          "type": "string",
+          "description": "The number of repetitions or duration (e.g., '10', '20ث', '10 لكل رجل')."
+        },
+        "restSeconds": {
+          "type": "number",
+          "description": "The rest time in seconds after each set of this exercise."
+        },
+        "notesAr": {
+          "type": "string",
+          "description": "Specific notes for the exercise on this day (e.g., 'ضغط بطيء 3ث')."
+        }
+      },
+      "required": [
+        "id",
+        "programDayId",
+        "exerciseId",
+        "order",
+        "sets",
+        "repsOrDuration",
+        "restSeconds"
+      ]
+    },
+    "Exercise": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Exercise",
+      "type": "object",
+      "description": "Defines a generic exercise, including its name and associated Lottie animation.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Exercise entity."
+        },
+        "nameAr": {
+          "type": "string",
+          "description": "The Arabic name of the exercise (e.g., 'سكوات')."
+        },
+        "lottieUrl": {
+          "type": "string",
+          "description": "URL to the Lottie animation file for this exercise.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "nameAr",
+        "lottieUrl"
+      ]
+    },
+    "UserWorkoutProgress": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserWorkoutProgress",
+      "type": "object",
+      "description": "Tracks a user's specific progress through a chosen workout program template.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserWorkoutProgress entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the UserProfile this progress belongs to. (Relationship: UserProfile 1:1 UserWorkoutProgress)"
+        },
+        "programTemplateId": {
+          "type": "string",
+          "description": "Reference to the WorkoutProgramTemplate the user is following. (Relationship: WorkoutProgramTemplate 1:N UserWorkoutProgress)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The date when the user started this workout program.",
+          "format": "date"
+        },
+        "currentDayNumber": {
+          "type": "number",
+          "description": "The current day number the user is on in their program (1-30)."
+        },
+        "streak": {
+          "type": "number",
+          "description": "The current workout streak of consecutive completed days."
+        },
+        "lastCompletedDayNumber": {
+          "type": "number",
+          "description": "The number of the last day successfully completed in the program."
+        },
+        "lastCompletedDate": {
+          "type": "string",
+          "description": "The date when the last workout day was completed.",
+          "format": "date"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "programTemplateId",
+        "startDate",
+        "currentDayNumber",
+        "streak",
+        "lastCompletedDayNumber",
+        "lastCompletedDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "users/{userId}/profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores core information about a user. The document ID `{userId}` matches `UserProfile.id` and `request.auth.uid`, ensuring authorization independence and direct ownership. Includes a reference to the user's workout progress.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/dailyLogs/{dailyLogId}",
+        "definition": {
+          "entityName": "UserDailyLog",
+          "schema": {
+            "$ref": "#/backend/entities/UserDailyLog"
+          },
+          "description": "Records a user's daily activities. The `{userId}` in the path enforces ownership. The `userId` field in the document is denormalized for explicit reference without `get()`. `{dailyLogId}` can be a date string (e.g., 'YYYY-MM-DD').",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            },
+            {
+              "name": "dailyLogId",
+              "description": "The unique ID for the daily log, typically representing the date (e.g., '2023-10-27')."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/dailyLogs/{dailyLogId}/stepRoutePoints/{stepRoutePointId}",
+        "definition": {
+          "entityName": "StepRoutePoint",
+          "schema": {
+            "$ref": "#/backend/entities/StepRoutePoint"
+          },
+          "description": "Represents geographical points for a user's daily activity. Inherits ownership from `/users/{userId}/dailyLogs/{dailyLogId}`. The `userDailyLogId` field is denormalized for authorization independence and explicit referencing.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            },
+            {
+              "name": "dailyLogId",
+              "description": "The unique ID for the daily log."
+            },
+            {
+              "name": "stepRoutePointId",
+              "description": "The unique ID for a specific step route point."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/dailyLogs/{dailyLogId}/meals/{mealId}",
+        "definition": {
+          "entityName": "MealLog",
+          "schema": {
+            "$ref": "#/backend/entities/MealLog"
+          },
+          "description": "Records details of a user's meal for a specific day. Inherits ownership from `/users/{userId}/dailyLogs/{dailyLogId}`. The `userDailyLogId` field is denormalized for authorization independence and explicit referencing.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            },
+            {
+              "name": "dailyLogId",
+              "description": "The unique ID for the daily log."
+            },
+            {
+              "name": "mealId",
+              "description": "The unique ID for a specific meal log."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/dailyLogs/{dailyLogId}/meals/{mealId}/mealItems/{mealItemId}",
+        "definition": {
+          "entityName": "MealItem",
+          "schema": {
+            "$ref": "#/backend/entities/MealItem"
+          },
+          "description": "Represents a single food item within a user's meal. Inherits ownership from `/users/{userId}/dailyLogs/{dailyLogId}/meals/{mealId}`. The `mealLogId` field is denormalized for authorization independence and explicit referencing.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            },
+            {
+              "name": "dailyLogId",
+              "description": "The unique ID for the daily log."
+            },
+            {
+              "name": "mealId",
+              "description": "The unique ID for a specific meal log."
+            },
+            {
+              "name": "mealItemId",
+              "description": "The unique ID for a specific meal item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/weightEntries/{weightEntryId}",
+        "definition": {
+          "entityName": "WeightEntry",
+          "schema": {
+            "$ref": "#/backend/entities/WeightEntry"
+          },
+          "description": "Records a user's weight measurements over time. The `{userId}` in the path enforces ownership. The `userId` field in the document is denormalized for explicit reference without `get()`.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            },
+            {
+              "name": "weightEntryId",
+              "description": "The unique ID for a specific weight entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/workoutProgress/{userWorkoutProgressId}",
+        "definition": {
+          "entityName": "UserWorkoutProgress",
+          "schema": {
+            "$ref": "#/backend/entities/UserWorkoutProgress"
+          },
+          "description": "Tracks a user's progress through a chosen workout program. The `{userId}` in the path enforces ownership, and the `userId` field in the document is denormalized for explicit reference, ensuring authorization independence. This is a singleton subcollection per user, typically identified by `current` or linked from UserProfile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique ID of the user, matching `request.auth.uid`."
+            },
+            {
+              "name": "userWorkoutProgressId",
+              "description": "The unique ID for the user's workout progress, typically a fixed identifier like 'current'."
+            }
+          ]
+        }
+      },
+      {
+        "path": "exercises/{exerciseId}",
+        "definition": {
+          "entityName": "Exercise",
+          "schema": {
+            "$ref": "#/backend/entities/Exercise"
+          },
+          "description": "Defines a generic exercise with its name and Lottie animation URL. This collection is globally readable, serving as static reference data.",
+          "params": [
+            {
+              "name": "exerciseId",
+              "description": "The unique ID for a specific exercise."
+            }
+          ]
+        }
+      },
+      {
+        "path": "workoutProgramTemplates/{programTemplateId}",
+        "definition": {
+          "entityName": "WorkoutProgramTemplate",
+          "schema": {
+            "$ref": "#/backend/entities/WorkoutProgramTemplate"
+          },
+          "description": "Defines a standardized 30-day workout program template (e.g., 'Beginner', 'Intermediate'). This collection is globally readable, serving as static reference data.",
+          "params": [
+            {
+              "name": "programTemplateId",
+              "description": "The unique ID for a specific workout program template (e.g., 'beginner_30_day')."
+            }
+          ]
+        }
+      },
+      {
+        "path": "workoutProgramTemplates/{programTemplateId}/programDays/{programDayId}",
+        "definition": {
+          "entityName": "ProgramDay",
+          "schema": {
+            "$ref": "#/backend/entities/ProgramDay"
+          },
+          "description": "Defines a single day within a workout program template. This collection is globally readable. The `programTemplateId` field is denormalized for explicit reference without `get()`.",
+          "params": [
+            {
+              "name": "programTemplateId",
+              "description": "The unique ID of the parent workout program template."
+            },
+            {
+              "name": "programDayId",
+              "description": "The unique ID for a specific program day within the template (e.g., 'day_1')."
+            }
+          ]
+        }
+      },
+      {
+        "path": "workoutProgramTemplates/{programTemplateId}/programDays/{programDayId}/programDayExercises/{programDayExerciseId}",
+        "definition": {
+          "entityName": "ProgramDayExercise",
+          "schema": {
+            "$ref": "#/backend/entities/ProgramDayExercise"
+          },
+          "description": "Defines how a specific exercise is performed on a particular program day. This collection is globally readable. The `programDayId` field is denormalized for explicit reference without `get()`.",
+          "params": [
+            {
+              "name": "programTemplateId",
+              "description": "The unique ID of the grandparent workout program template."
+            },
+            {
+              "name": "programDayId",
+              "description": "The unique ID of the parent program day."
+            },
+            {
+              "name": "programDayExerciseId",
+              "description": "The unique ID for a specific exercise instruction within the program day."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed to be secure, scalable, and debuggable by strictly adhering to the core design principles and strategy mandates. \n\n**Authorization Independence (CRITICAL) & Denormalization Strategy:**\nAuthorization independence is primarily achieved through a path-based ownership model for all user-specific data and by explicitly denormalizing authorization-relevant IDs into subcollection documents. For instance, all user-specific data, such as `UserProfile`, `UserDailyLog`, `WeightEntry`, and `UserWorkoutProgress`, are structured under `/users/{userId}/...`. This ensures that access rules can directly check `request.auth.uid == userId` from the path, eliminating the need for expensive and complex `get()` calls to parent documents to determine ownership. \n\nSpecifically:\n*   In `/users/{userId}/profile`, the `UserProfile.id` field will match the `userId` wildcard from the path. This makes direct ownership checks trivial.\n*   For subcollections like `/users/{userId}/dailyLogs/{dailyLogId}/meals/{mealId}`, the `MealLog` document explicitly contains `userDailyLogId` (referencing the parent `dailyLogId`). While the `userId` is implicit from the path, including the direct parent's ID (`userDailyLogId`) ensures that if a rule needed to reference the immediate parent's ID for validation, it wouldn't need a `get()`. However, the primary authorization for these nested user-owned data types still relies on the top-level `userId` in the path, making authorization checks atomic and simple (`request.auth.uid == userId`).\n*   Static, globally accessible data like `exercises`, `workoutProgramTemplates`, and their subcollections (`programDays`, `programDayExercises`) are stored in top-level collections. Their authorization rules simply grant public read access (`allow read: if true;`), as they are not user-specific and do not require any `get()` calls for authorization.\n\n**Querying and Authorization Posture (QAPs - Rules are not Filters):**\nThis structure inherently supports secure `list` operations without requiring security rules to act as data filters. \n\n*   **User-Specific Data:** By nesting all user-owned data under `/users/{userId}/...`, any `list` query issued by an authenticated user to a path like `/users/$(request.auth.uid)/dailyLogs` will inherently only return data belonging to that specific user. The security rules will permit `list` operations only if `request.auth.uid == userId`, thus preventing users from querying other users' data. This avoids the `rules are filters` anti-pattern, as the client's query path itself already provides the necessary context for authorization.\n*   **Global Templates:** Collections like `/workoutProgramTemplates` and `/exercises` are designed for public read access. `list` queries on these collections are expected to retrieve all documents, and the security rules (`allow list: if true;`) explicitly permit this. This ensures that the data returned matches the client's request without being silently filtered by rules, maintaining predictable and debuggable behavior.\n\n**DBAC and Role-Based Access:**\nAll authorization decisions rely on `request.auth.uid`. There are no custom claims. For public read data, `true` is the authorization. For user-owned data, `request.auth.uid` matching the `userId` in the path (which is mirrored in the document `id` or `userId` field) is the authorization criterion. Any administrative write access, if needed, would be implemented by checking existence in a dedicated `admin_users/{uid}` collection, following the DBAC principle."
+  }
+}

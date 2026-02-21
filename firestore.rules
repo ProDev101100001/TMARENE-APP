@@ -1,0 +1,183 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * TAMRINI FIRESTORE SECURITY RULES
+     *
+     * Core Philosophy: 
+     * This ruleset enforces a strict user-ownership model. All personal fitness data, 
+     * progress, and logs are nested under a user-specific path (/users/{userId}), 
+     * ensuring that users can only access and modify their own information. 
+     * Static content, such as exercises and workout templates, is globally readable 
+     * but strictly read-only for all users.
+     *
+     * Data Structure:
+     * - /users/{userId}/profile: The root user document.
+     * - /users/{userId}/...: All private subcollections (logs, meals, weight, progress).
+     * - /exercises: Publicly accessible library of movements and animations.
+     * - /workoutProgramTemplates: Publicly accessible 30-day workout programs.
+     *
+     * Key Security Decisions:
+     * - Authorization Independence: Rules rely on the path-based {userId} wildcard 
+     *   matched against request.auth.uid for maximum performance and security.
+     * - Prototyping Mode: Schema validation is restricted to relational integrity 
+     *   fields (like owner IDs) to allow for rapid development of data shapes.
+     * - Immutable Ownership: Critical fields like userId or creatorId are enforced 
+     *   as immutable once a document is created.
+     */
+
+    // --- HELPER FUNCTIONS ---
+
+    /** @description Checks if the user is authenticated. */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /** @description Checks if the current user matches the provided userId from the path. */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /** @description Verifies ownership and ensures the document exists for state changes. */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    // --- USER PROFILE ---
+
+    /**
+     * @description Rules for the user's primary profile document. Matches Auth UID to Doc ID.
+     * @path /users/{userId}/profile
+     * @allow (get) Any owner can view their own profile.
+     * @deny (create) If the document ID does not match the authenticated user's UID.
+     * @principle Self-Creation and ownership enforcement.
+     */
+    match /users/{userId}/profile {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    // --- USER LOGS & ACTIVITY ---
+
+    /**
+     * @description Rules for daily activity logs including steps and calorie data.
+     * @path /users/{userId}/dailyLogs/{dailyLogId}
+     * @allow (create) If owner UID matches the userId in the document and path.
+     * @deny (update) If the internal userId is being changed.
+     * @principle Relational integrity and path-based ownership.
+     */
+    match /users/{userId}/dailyLogs/{dailyLogId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description GPS path points captured during activity.
+       * @path /users/{userId}/dailyLogs/{dailyLogId}/stepRoutePoints/{stepRoutePointId}
+       */
+      match /stepRoutePoints/{stepRoutePointId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isExistingOwner(userId);
+        allow delete: if isExistingOwner(userId);
+      }
+
+      /**
+       * @description Meal logs recorded on a specific day.
+       * @path /users/{userId}/dailyLogs/{dailyLogId}/meals/{mealId}
+       */
+      match /meals/{mealId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId);
+        allow update: if isExistingOwner(userId);
+        allow delete: if isExistingOwner(userId);
+
+        /**
+         * @description Specific food items within a meal.
+         * @path /users/{userId}/dailyLogs/{dailyLogId}/meals/{mealId}/mealItems/{mealItemId}
+         */
+        match /mealItems/{mealItemId} {
+          allow get, list: if isOwner(userId);
+          allow create: if isOwner(userId);
+          allow update: if isExistingOwner(userId);
+          allow delete: if isExistingOwner(userId);
+        }
+      }
+    }
+
+    // --- WEIGHT TRACKING ---
+
+    /**
+     * @description Rules for weight entries over time.
+     * @path /users/{userId}/weightEntries/{weightEntryId}
+     * @allow (list) Owner listing their weight history.
+     * @principle Owner-only data access.
+     */
+    match /users/{userId}/weightEntries/{weightEntryId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    // --- WORKOUT PROGRESS ---
+
+    /**
+     * @description Tracks the current 30-day streak and program status.
+     * @path /users/{userId}/workoutProgress/{userWorkoutProgressId}
+     * @allow (update) The owner updating their current streak or day number.
+     * @principle Enforces consistency between authenticated user and progress data.
+     */
+    match /users/{userId}/workoutProgress/{userWorkoutProgressId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    // --- STATIC DATA (READ-ONLY) ---
+
+    /**
+     * @description Global exercise library containing Lottie animations.
+     * @path /exercises/{exerciseId}
+     * @allow (read) Publicly readable for all users.
+     * @deny (write) No user (including admins here) can modify exercises via the client.
+     */
+    match /exercises/{exerciseId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Workout program templates (Beginner, Intermediate, Advanced).
+     * @path /workoutProgramTemplates/{programTemplateId}
+     * @allow (read) Publicly readable.
+     * @deny (write) Strictly read-only to prevent tampering with program logic.
+     */
+    match /workoutProgramTemplates/{programTemplateId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+
+      /**
+       * @description Specific days within a program template.
+       */
+      match /programDays/{programDayId} {
+        allow get, list: if true;
+        allow create, update, delete: if false;
+
+        /**
+         * @description Specific exercise instructions for a day.
+         */
+        match /programDayExercises/{programDayExerciseId} {
+          allow get, list: if true;
+          allow create, update, delete: if false;
+        }
+      }
+    }
+  }
+}
