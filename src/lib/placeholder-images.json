@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "fitness-hero",
+      "description": "Person exercising outdoors",
+      "imageUrl": "https://images.unsplash.com/photo-1637714890222-435eefed5f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmaXRuZXNzJTIwZXhlcmNpc2V8ZW58MHx8fHwxNzcxNjg0OTA0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fitness exercise"
+    },
+    {
+      "id": "healthy-meal",
+      "description": "Healthy salad bowl",
+      "imageUrl": "https://images.unsplash.com/photo-1547592180-85f173990554?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxoZWFsdGh5JTIwZm9vZHxlbnwwfHx8fDE3NzE2Njg2MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "healthy food"
+    },
+    {
+      "id": "workout-yoga",
+      "description": "Yoga session",
+      "imageUrl": "https://images.unsplash.com/photo-1599447421338-2d21d3530aeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx5b2dhJTIwc3RyZXRjaGluZ3xlbnwwfHx8fDE3NzE2MjYyMzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yoga stretching"
+    },
+    {
+      "id": "running-track",
+      "description": "Person running on a track",
+      "imageUrl": "https://images.unsplash.com/photo-1695918428487-7934244c19ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxydW5uaW5nJTIwc3ByaW50aW5nfGVufDB8fHx8MTc3MTY4NDkwNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "running sprinting"
+    },
+    {
+      "id": "weight-loss",
+      "description": "Measuring tape and weights",
+      "imageUrl": "https://images.unsplash.com/photo-1522844990619-4951c40f7eda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3ZWlnaHQlMjBsb3NzfGVufDB8fHx8MTc3MTY4NDkwNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "weight loss"
+    }
+  ]
 }
