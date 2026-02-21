@@ -1,4 +1,3 @@
-
 "use client"
 
 import { BottomNav } from "@/components/layout/bottom-nav"
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle2, Play, ChevronLeft, Dumbbell, Timer, Zap } from "lucide-react"
+import Image from "next/image"
 
 const days = Array.from({ length: 30 }, (_, i) => ({
   day: i + 1,
