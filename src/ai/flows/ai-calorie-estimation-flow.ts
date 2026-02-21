@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for estimating calories and macronutrients from a food image.
@@ -21,8 +22,8 @@ const EstimateCaloriesInputSchema = z.object({
 export type EstimateCaloriesInput = z.infer<typeof EstimateCaloriesInputSchema>;
 
 const FoodItemSchema = z.object({
-  name: z.string().describe('The name of the identified food item.'),
-  estimatedPortionSize: z
+  nameAr: z.string().describe('The Arabic name of the identified food item.'),
+  estimatedPortion: z
     .string()
     .describe('The estimated portion size of the food item (e.g., "1 cup", "100g").'),
   calories: z.number().describe('The estimated calories for this food item.'),
@@ -51,6 +52,8 @@ const EstimateCaloriesOutputSchema = z.object({
   totalFatsGrams: z
     .number()
     .describe('The total estimated fats in grams for the entire meal.'),
+  healthNote: z.string().describe('A short Arabic health advice or insight about the meal.'),
+  warningLevel: z.enum(['none', 'low', 'medium', 'high']).describe('The health warning level.'),
 });
 export type EstimateCaloriesOutput = z.infer<typeof EstimateCaloriesOutputSchema>;
 
@@ -65,19 +68,15 @@ const estimateCaloriesPrompt = ai.definePrompt({
   input: {schema: EstimateCaloriesInputSchema},
   output: {schema: EstimateCaloriesOutputSchema},
   model: googleAI.model('gemini-2.5-flash-image'),
-  config: {
-    responseModalities: ['TEXT', 'IMAGE'],
-  },
-  prompt: `Analyze this food image and provide the following details in a structured JSON format:
+  prompt: `حلل هذه الوجبة وأعطني النتيجة بصيغة JSON فقط:
 
-1.  A list of identified food items.
-2.  Estimated portion sizes for each item.
-3.  Estimated calories per item.
-4.  Estimated macronutrients (protein, carbs, fats in grams) per item.
-5.  The total estimated calories for the entire meal.
-6.  The total estimated macronutrients (protein, carbs, fats in grams) for the entire meal.
-
-Return the output strictly as a JSON object matching the output schema provided.
+1. قائمة بالأطعمة المحددة باللغة العربية.
+2. الكميات المقدرة لكل صنف.
+3. السعرات المقدرة لكل صنف.
+4. المغذيات الكبرى (بروتين، كارب، دهون بالجرام) لكل صنف.
+5. الإجمالي للوجبة كاملة.
+6. نصيحة صحية قصيرة بالعربي (healthNote).
+7. مستوى التحذير الصحي (warningLevel) بناءً على جودة الوجبة.
 
 Image: {{media url=photoDataUri}}`,
 });
