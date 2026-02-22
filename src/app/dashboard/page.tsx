@@ -1,87 +1,125 @@
-
 "use client"
 
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Footprints, Flame, ChevronRight, Zap } from "lucide-react"
+import { Footprints, Flame, ChevronRight, Zap, Activity } from "lucide-react"
 import Link from "next/link"
 import { useUser } from "@/firebase"
+import { Progress } from "@/components/ui/progress"
 
 export default function Dashboard() {
   const { user } = useUser()
+  const steps = 4200
+  const stepGoal = 10000
+  const progress = (steps / stepGoal) * 100
 
   return (
-    <div className="min-h-screen bg-background pb-20 rtl text-pt-sans">
-      <header className="p-6 sticky top-0 z-10 bg-background/80 backdrop-blur-md">
+    <div className="min-h-screen bg-background pb-20 rtl page-transition-fade">
+      <header className="p-6 pt-10 sticky top-0 z-10 bg-background/80 backdrop-blur-md flex justify-between items-start">
         <div className="flex flex-col gap-1 text-right">
-          <h1 className="text-2xl font-bold">صباح الخير، {user?.displayName || 'أحمد'}! 👋</h1>
-          <div className="flex items-center justify-end gap-2 text-accent">
-            <span className="text-sm font-bold">🔥 Streak: 7 أيام</span>
-          </div>
+          <h1 className="font-medium-title">صباح الخير، {user?.displayName || 'أحمد'}! 👋</h1>
+          <p className="text-[12px] text-muted-foreground">الأحد، 22 فبراير</p>
+        </div>
+        <div className="flex items-center gap-1 bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">
+          <span className="text-accent font-bold">🔥 7</span>
         </div>
       </header>
 
-      <main className="p-4 space-y-6">
-        {/* Step & Calorie Mini Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <Link href="/steps" className="block">
-            <Card className="bg-card border-none shadow-lg hover:bg-card/80 transition-all cursor-pointer">
-              <CardContent className="p-4 flex flex-col items-center gap-2">
-                <Footprints className="h-6 w-6 text-primary" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold">4,200</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">خطوات</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/nutrition" className="block">
-            <Card className="bg-card border-none shadow-lg hover:bg-card/80 transition-all cursor-pointer">
-              <CardContent className="p-4 flex flex-col items-center gap-2">
-                <Flame className="h-6 w-6 text-accent" />
-                <div className="text-center">
-                  <p className="text-2xl font-bold">1,450</p>
-                  <p className="text-[10px] text-muted-foreground uppercase">سعرات</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
+      <main className="px-6 space-y-8">
+        {/* Step Progress Hero */}
+        <section className="flex flex-col items-center justify-center py-4">
+          <div className="relative w-64 h-64 flex items-center justify-center">
+             {/* Progress Ring Background */}
+             <svg className="absolute inset-0 w-full h-full -rotate-90">
+               <circle 
+                 cx="128" cy="128" r="110" 
+                 stroke="#2D374880" strokeWidth="12" fill="transparent" 
+               />
+               <circle 
+                 cx="128" cy="128" r="110" 
+                 stroke="#2ECC71" strokeWidth="12" fill="transparent" 
+                 className="progress-ring-ease"
+                 strokeDasharray={691} 
+                 strokeDashoffset={691 - (progress / 100) * 691}
+                 strokeLinecap="round"
+               />
+             </svg>
+             <div className="text-center z-10 flex flex-col items-center">
+                <span className="font-hero">{steps.toLocaleString()}</span>
+                <span className="text-muted-foreground font-regular-body">خطوة</span>
+                <span className="text-primary text-[12px] font-bold mt-1">{progress.toFixed(0)}%</span>
+             </div>
+          </div>
+          <p className="text-[12px] text-muted-foreground mt-4">من {stepGoal.toLocaleString()} هدف</p>
+        </section>
 
-        {/* Current Workout Status */}
-        <Card className="bg-surface border-none shadow-xl overflow-hidden">
-          <CardContent className="p-6 space-y-4">
-            <div className="text-right space-y-1">
-              <h2 className="text-lg font-bold">برنامجك اليوم</h2>
-              <p className="text-sm text-muted-foreground">اليوم 8 من 30</p>
-            </div>
-            <Link href="/workouts">
-              <Button className="w-full bg-primary hover:bg-primary/90 text-background font-bold h-14 rounded-2xl btn-animate">
-                ابدأ التمرين <ChevronRight className="mr-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        {/* Stats Grid */}
+        <section className="grid grid-cols-2 gap-4">
+          <Card className="bg-card border-none shadow-sm rounded-2xl">
+            <CardContent className="p-4 flex flex-col items-center gap-2">
+              <Activity className="h-7 w-7 text-primary" />
+              <div className="text-center">
+                <p className="text-xl font-bold">2.8 km</p>
+                <p className="text-[12px] text-muted-foreground">المسافة</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-none shadow-sm rounded-2xl">
+            <CardContent className="p-4 flex flex-col items-center gap-2">
+              <Flame className="h-7 w-7 text-accent" />
+              <div className="text-center">
+                <p className="text-xl font-bold">1,450</p>
+                <p className="text-[12px] text-muted-foreground">سعرات</p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
 
-        {/* Nutrition Section */}
-        <div className="space-y-3">
-          <h3 className="text-right font-bold text-sm text-muted-foreground uppercase">وجباتك اليوم</h3>
-          <Link href="/nutrition">
-            <Button variant="outline" className="w-full h-14 rounded-2xl border-dashed border-primary/30 bg-primary/5 text-primary gap-2 btn-animate">
-              <Zap className="h-5 w-5" /> أضف وجبة 📷
+        {/* Workout CTA */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-end px-1">
+            <h2 className="font-medium-title">برنامجك اليوم</h2>
+            <span className="text-[12px] text-muted-foreground">اليوم 8 من 30</span>
+          </div>
+          <Progress value={26} className="h-1.5 bg-muted rounded-full" />
+          <Link href="/workouts">
+            <Button className="w-full h-14 rounded-2xl bg-primary hover:bg-primary/90 text-background font-bold text-lg btn-animate mt-2">
+              ▶ ابدأ التمرين
             </Button>
           </Link>
-        </div>
+        </section>
 
-        {/* AI Tip */}
-        <div className="bg-accent/10 border border-accent/20 p-4 rounded-2xl flex gap-3 items-start">
-          <div className="flex-1 text-right">
-            <p className="text-[10px] font-bold text-accent mb-1">نصيحة اليوم 💡</p>
-            <p className="text-xs text-white">"شرب الماء قبل الوجبة بـ 30 دقيقة يساعد في تحسين الهضم والشعور بالشبع."</p>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-[10px] font-bold">AI</div>
-        </div>
+        {/* Nutrition CTA */}
+        <section className="space-y-4">
+           <div className="flex justify-between items-center px-1">
+             <h2 className="font-medium-title">وجباتك اليوم</h2>
+             <span className="text-[12px] text-muted-foreground">1,450 / 2,000 سعرة</span>
+           </div>
+           <Link href="/nutrition">
+            <Button variant="outline" className="w-full h-14 rounded-2xl border-dashed border-primary/30 bg-primary/5 text-primary gap-2 btn-animate">
+              + أضف وجبة 📷
+            </Button>
+          </Link>
+        </section>
+
+        {/* Weekly Activity Chart (Simplified UI Representation) */}
+        <section className="space-y-4 pb-10">
+           <h2 className="font-medium-title">نشاط الأسبوع</h2>
+           <div className="flex justify-between items-end h-32 px-2">
+              {[60, 40, 80, 50, 90, 30, 70].map((h, i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <div 
+                    className={`w-3 rounded-full ${i === 4 ? 'bg-primary' : 'bg-muted/50'}`} 
+                    style={{ height: `${h}%` }}
+                  />
+                  <span className="text-[10px] text-muted-foreground">
+                    {['س', 'أ', 'ث', 'أ', 'خ', 'ج', 'س'][i]}
+                  </span>
+                </div>
+              ))}
+           </div>
+        </section>
       </main>
 
       <BottomNav />

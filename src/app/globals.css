@@ -1,28 +1,27 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 230 30% 15%; /* #1A1A2E - Dark Navy */
+    --background: 220 48% 8%; /* #0B1220 - Background */
     --foreground: 0 0% 100%;
-    --card: 222 47% 11%; /* #16213E */
+    --card: 222 47% 17%; /* #16213E - Card Background */
     --card-foreground: 0 0% 100%;
-    --popover: 222 47% 11%;
+    --popover: 222 47% 17%;
     --popover-foreground: 0 0% 100%;
-    --primary: 145 63% 49%; /* #2ECC71 - Active Green */
-    --primary-foreground: 230 30% 15%;
-    --secondary: 215 73% 22%; /* #0F3460 */
+    --primary: 145 63% 49%; /* #2ECC71 - Primary Green */
+    --primary-foreground: 220 48% 8%;
+    --secondary: 215 73% 22%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 222 47% 15%;
-    --muted-foreground: 240 5% 65%; /* #A0A0B0 */
-    --accent: 38 92% 50%; /* #F39C12 - Orange */
+    --muted: 222 47% 22%;
+    --muted-foreground: 215 20% 65%; /* #9CA3AF */
+    --accent: 38 92% 50%; /* #F39C12 - Streak/Achievements */
     --accent-foreground: 0 0% 100%;
-    --destructive: 6 78% 57%; /* #E74C3C - Red */
+    --destructive: 6 78% 57%; /* #E74C3C - Danger */
     --destructive-foreground: 0 0% 100%;
-    --border: 215 73% 30%;
-    --input: 215 73% 30%;
+    --border: 222 47% 25%;
+    --input: 222 47% 25%;
     --ring: 145 63% 49%;
     --radius: 1rem;
   }
@@ -42,6 +41,19 @@
   direction: rtl;
 }
 
+/* Typography Weights */
+.font-hero {
+  @apply text-[56px] font-bold leading-none tracking-tight;
+}
+
+.font-medium-title {
+  @apply text-[20px] font-medium;
+}
+
+.font-regular-body {
+  @apply text-[14px] font-normal;
+}
+
 /* Button Animations */
 .btn-animate {
   @apply transition-all duration-100 active:scale-95 active:opacity-80;
@@ -51,11 +63,20 @@
   @apply transition-all duration-200 hover:scale-105;
 }
 
-/* Custom Utilities */
-.bg-surface {
-  background-color: #0F3460;
+/* Custom Transitions */
+.page-transition-fade {
+  @apply animate-in fade-in duration-200;
 }
 
-.text-pt-sans {
-  font-family: 'PT Sans', sans-serif;
+.page-transition-slide-right {
+  @apply animate-in slide-in-from-right-10 duration-200;
+}
+
+.page-transition-slide-up {
+  @apply animate-in slide-in-from-bottom-10 duration-200;
+}
+
+/* Progress Ring Animation */
+.progress-ring-ease {
+  transition: stroke-dashoffset 0.6s ease-out;
 }

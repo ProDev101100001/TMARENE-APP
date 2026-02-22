@@ -1,15 +1,15 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { ChevronRight, Play, Timer, Zap, X, Trophy, Plus, Minus, Dumbbell, ArrowLeft } from "lucide-react"
+import { ChevronRight, Play, Trophy, ArrowLeft, X, Dumbbell } from "lucide-react"
 import Link from "next/link"
 import dynamic from 'next/dynamic'
 import { getDayProgram } from "@/lib/workout-program"
 import { useUser } from "@/firebase"
+import { cn } from "@/lib/utils"
 
 const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 
@@ -82,38 +82,37 @@ export default function Workouts() {
   if (view === 'active') {
     const ex = exercises[currentExIndex]
     return (
-      <div className="min-h-screen bg-background flex flex-col rtl p-6 text-pt-sans">
-        <header className="flex justify-between items-center mb-6">
-          <Button variant="ghost" size="icon" onClick={() => setView('list')} className="text-white">
-            <ArrowLeft className="h-6 w-6" />
+      <div className="min-h-screen bg-background flex flex-col rtl p-6 page-transition-slide-up">
+        <header className="flex justify-between items-center mb-10">
+          <Button variant="ghost" size="icon" onClick={() => setView('list')} className="text-muted-foreground">
+            <X className="h-6 w-6" />
           </Button>
-          <div className="text-center">
-            <p className="text-sm font-bold">اليوم {currentDay} من 30</p>
+          <div className="text-center flex flex-col">
+            <span className="font-medium-title">{ex.nameAr}</span>
+            <span className="text-[12px] text-muted-foreground">المجموعة {currentSet} من {ex.sets}</span>
           </div>
           <div className="w-10" />
         </header>
 
-        <main className="flex-1 flex flex-col items-center gap-4 text-center">
-          <h1 className="text-5xl font-black text-primary font-mono">{activeTimer}</h1>
-          <div className="space-y-1">
-            <h2 className="text-2xl font-bold">{ex.nameAr} — المجموعة {currentSet}/{ex.sets}</h2>
-            <p className="text-muted-foreground">الهدف: {ex.reps} تكرار</p>
+        <main className="flex-1 flex flex-col items-center text-center">
+          <span className="font-hero text-primary">{activeTimer}</span>
+          
+          <div className="w-full aspect-square max-w-[350px] bg-card rounded-[2rem] flex items-center justify-center p-12 shadow-inner border border-white/5 mt-8 overflow-hidden">
+             {/* Lottie Animation placeholder */}
+             <Dumbbell className="h-32 w-32 text-primary/10 animate-pulse" />
           </div>
 
-          <div className="w-full aspect-square max-w-[350px] bg-card rounded-[2rem] flex items-center justify-center p-8 shadow-inner overflow-hidden border border-white/5">
-             <Dumbbell className="h-32 w-32 text-primary/20 animate-pulse" />
-          </div>
-
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-3 mt-10">
              {[...Array(ex.sets)].map((_, i) => (
-               <div key={i} className={`w-3 h-3 rounded-full ${i < currentSet ? 'bg-primary' : 'bg-muted'}`} />
+               <div key={i} className={`w-3 h-3 rounded-full transition-colors ${i < currentSet ? 'bg-primary' : 'bg-muted'}`} />
              ))}
           </div>
+          <p className="text-[12px] text-muted-foreground mt-2">الهدف: {ex.reps} تكرار</p>
         </main>
 
-        <footer className="mt-8 space-y-4">
-          <Progress value={(currentExIndex / exercises.length) * 100} className="h-2 bg-muted" />
-          <Button className="w-full h-16 text-xl font-bold rounded-2xl shadow-lg bg-primary text-background btn-animate" onClick={handleDone}>
+        <footer className="mt-8 space-y-4 pb-4">
+          <Progress value={((currentExIndex + 1) / exercises.length) * 100} className="h-1.5 bg-muted rounded-full" />
+          <Button className="w-full h-14 text-lg font-bold rounded-2xl shadow-lg bg-primary text-background btn-animate" onClick={handleDone}>
             انتهيت من المجموعة ✓
           </Button>
         </footer>
@@ -126,36 +125,45 @@ export default function Workouts() {
     const nextEx = isNextSet ? exercises[currentExIndex] : exercises[currentExIndex + 1]
 
     return (
-      <div className="min-h-screen bg-card flex flex-col items-center justify-center p-8 rtl text-center text-pt-sans">
-        <p className="text-2xl font-bold mb-8">خذ راحتك! 💪</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 rtl text-center page-transition-fade">
+        <span className="font-medium-title mb-10">خذ راحتك! 💪</span>
         
-        <div className="relative w-48 h-48 flex items-center justify-center mb-8">
+        <div className="relative w-56 h-56 flex items-center justify-center mb-10">
            <svg className="absolute inset-0 w-full h-full -rotate-90">
-             <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-muted" />
-             <circle cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-primary transition-all duration-1000" strokeDasharray={502} strokeDashoffset={502 - (restTimer / 30) * 502} />
+             <circle cx="112" cy="112" r="100" stroke="#2D374880" strokeWidth="10" fill="transparent" />
+             <circle 
+               cx="112" cy="112" r="100" 
+               stroke="#2ECC71" strokeWidth="10" fill="transparent" 
+               className="progress-ring-ease" 
+               strokeDasharray={628} 
+               strokeDashoffset={628 - (restTimer / 30) * 628} 
+             />
            </svg>
-           <h2 className="text-6xl font-black font-mono">00:{restTimer.toString().padStart(2, '0')}</h2>
+           <span className="font-hero text-primary">00:{restTimer.toString().padStart(2, '0')}</span>
         </div>
         
-        <div className="flex gap-8 mb-12">
-          <Button variant="outline" className="rounded-2xl w-20 h-14 border-primary/20 bg-primary/5 text-primary btn-animate" onClick={() => setRestTimer(prev => Math.max(5, prev - 5))}>
-            -5ث
+        <div className="flex gap-6 mb-16">
+          <Button variant="outline" className="rounded-2xl w-24 h-14 border-white/10 bg-card text-white btn-animate text-lg" onClick={() => setRestTimer(prev => Math.max(5, prev - 5))}>
+            − 5ث
           </Button>
-          <Button variant="outline" className="rounded-2xl w-20 h-14 border-primary/20 bg-primary/5 text-primary btn-animate" onClick={() => setRestTimer(prev => prev + 5)}>
-            +5ث
+          <Button variant="outline" className="rounded-2xl w-24 h-14 border-white/10 bg-card text-white btn-animate text-lg" onClick={() => setRestTimer(prev => prev + 5)}>
+            + 5ث
           </Button>
         </div>
 
         {nextEx && (
-          <Card className="bg-surface/50 border-none p-4 w-full max-w-sm space-y-2">
-            <p className="text-xs text-muted-foreground">التالي: {nextEx.nameAr}</p>
-            <div className="w-12 h-12 bg-muted rounded-full mx-auto flex items-center justify-center">
-               <Dumbbell className="h-6 w-6 text-primary" />
+          <div className="w-full max-w-sm space-y-3">
+            <p className="text-[12px] text-muted-foreground">التالي:</p>
+            <div className="bg-card border border-white/5 p-4 rounded-2xl flex items-center gap-4">
+               <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                  <Dumbbell className="h-6 w-6 text-primary" />
+               </div>
+               <span className="font-bold">{nextEx.nameAr}</span>
             </div>
-          </Card>
+          </div>
         )}
 
-        <Button variant="ghost" className="mt-8 text-muted-foreground underline" onClick={handleRestComplete}>
+        <Button variant="ghost" className="mt-10 text-muted-foreground font-medium" onClick={handleRestComplete}>
           تخطى الراحة ←
         </Button>
       </div>
@@ -164,70 +172,73 @@ export default function Workouts() {
 
   if (view === 'summary') {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 rtl text-center text-pt-sans">
-        <div className="w-40 h-40 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative">
-           <Trophy className="h-20 w-20 text-accent animate-bounce" />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 rtl text-center page-transition-fade">
+        <div className="w-48 h-48 bg-primary/10 rounded-full flex items-center justify-center mb-10 relative">
+           <Trophy className="h-24 w-24 text-accent animate-bounce" />
            <div className="absolute inset-0 border-4 border-primary border-dashed rounded-full animate-spin-slow opacity-20" />
         </div>
-        <h1 className="text-4xl font-black text-primary mb-4">أحسنت! 🏆</h1>
-        <p className="text-lg text-muted-foreground mb-12">لقد أكملت تمرين اليوم بنجاح. فخورون بك!</p>
+        <h1 className="font-hero text-primary mb-2">أحسنت! 🏆</h1>
+        <p className="font-medium-title text-muted-foreground mb-16">أكملت اليوم {currentDay} من 30 بنجاح.</p>
         
-        <Link href="/dashboard" className="w-full max-w-sm">
-          <Button className="w-full h-16 rounded-2xl text-xl font-bold bg-primary text-background btn-success-animate">
-            العودة للرئيسية
-          </Button>
-        </Link>
+        <div className="w-full max-w-sm space-y-4">
+          <div className="bg-accent/10 p-4 rounded-2xl border border-accent/20">
+             <span className="text-accent font-bold text-xl">🔥 Streak: 8 أيام</span>
+          </div>
+          <Link href="/dashboard" className="block w-full">
+            <Button className="w-full h-14 rounded-2xl text-lg font-bold bg-primary text-background btn-success-animate">
+              العودة للرئيسية
+            </Button>
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20 rtl text-pt-sans">
-      <header className="p-6 flex flex-col gap-6 sticky top-0 z-10 bg-background/80 backdrop-blur-md">
+    <div className="min-h-screen bg-background pb-20 rtl page-transition-slide-right">
+      <header className="p-6 pt-10 flex flex-col gap-6 sticky top-0 z-10 bg-background/80 backdrop-blur-md">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-             <Zap className="h-5 w-5 text-accent fill-accent" />
-             <span className="text-sm font-bold text-accent">🔥 7</span>
+          <Link href="/dashboard">
+            <Button variant="ghost" size="icon" className="text-white">
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+          </Link>
+          <h1 className="font-medium-title">اليوم {currentDay} من 30</h1>
+          <div className="flex items-center gap-1 bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">
+            <span className="text-accent font-bold">🔥 7</span>
           </div>
-          <h1 className="text-lg font-bold">اليوم {currentDay} من 30</h1>
         </div>
-        <div className="space-y-2">
-          <Progress value={(currentDay / 30) * 100} className="h-2 bg-muted" />
-        </div>
+        <Progress value={(currentDay / 30) * 100} className="h-1.5 bg-muted rounded-full" />
       </header>
 
-      <main className="p-4 space-y-6">
+      <main className="px-6 space-y-8 mt-4">
         <div className="text-right">
            <h2 className="text-3xl font-bold">{dayData.titleAr}</h2>
-           <p className="text-sm text-muted-foreground">برنامج مكثف لزيادة اللياقة والقوة البدنية</p>
+           <p className="text-[14px] text-muted-foreground mt-1">4 تمارين · ~25 دقيقة</p>
         </div>
 
-        <div className="space-y-3">
-          <h3 className="text-right font-bold text-xs text-muted-foreground uppercase tracking-wider">قائمة التمارين</h3>
-          <div className="space-y-3">
-            {exercises.map((ex, i) => (
-              <Card 
-                key={i} 
-                className="bg-card border-none shadow-md hover:bg-card/80 transition-all cursor-pointer group"
-                onClick={() => startWorkout(i)}
-              >
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">
-                     {i+1}
-                  </div>
-                  <div className="flex-1 text-right">
-                    <p className="font-bold group-hover:text-primary transition-colors">{ex.nameAr}</p>
-                    <p className="text-xs text-muted-foreground">{ex.sets} مجموعات × {ex.reps}</p>
-                  </div>
-                  <div className="w-14 h-14 bg-surface rounded-2xl flex items-center justify-center">
-                     <Dumbbell className="h-6 w-6 text-muted-foreground/30" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <Button className="w-full h-16 mt-6 bg-primary text-background text-xl font-bold rounded-2xl btn-animate" onClick={() => startWorkout(0)}>
-             ابدأ التحدي اليوم ←
+        <div className="space-y-4">
+          {exercises.map((ex, i) => (
+            <Card 
+              key={i} 
+              className="bg-card border-none shadow-sm rounded-2xl overflow-hidden active:scale-95 transition-transform cursor-pointer group"
+              onClick={() => startWorkout(i)}
+            >
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary font-bold">
+                   <Dumbbell className="h-7 w-7" />
+                </div>
+                <div className="flex-1 text-right">
+                  <p className="font-bold group-hover:text-primary transition-colors">{ex.nameAr}</p>
+                  <p className="text-[12px] text-muted-foreground">{ex.sets} مجموعات × {ex.reps}</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-[-4px] transition-transform" />
+              </CardContent>
+            </Card>
+          ))}
+          
+          <Button className="w-full h-16 mt-8 bg-primary text-background text-xl font-bold rounded-2xl btn-animate shadow-lg" onClick={() => startWorkout(0)}>
+             ▶ ابدأ التمرين الآن
           </Button>
         </div>
       </main>
