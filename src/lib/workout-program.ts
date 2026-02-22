@@ -14,14 +14,25 @@ export type DayProgram = {
   exercises: ExerciseDetail[];
 };
 
-// Map Lottie IDs to a accessible JSON URL from a common CDN or the provided IconScout IDs
-// For this demo, we'll use a placeholder structure. In production, you'd use direct .json links.
-const getLottieUrl = (id: string) => `https://assets9.lottiefiles.com/packages/lf20_${id}.json`;
+/**
+ * دالة للحصول على رابط Lottie بناءً على المعرف
+ * نستخدم روابط مباشرة من CDN أو روابط تجريبية
+ */
+export const getLottieUrl = (id: string) => {
+  if (id === 'plank') return 'https://assets8.lottiefiles.com/packages/lf20_m6mshzwp.json';
+  if (id === 'lunge') return 'https://assets3.lottiefiles.com/packages/lf20_968msc.json';
+  if (id === 'crunch') return 'https://assets5.lottiefiles.com/packages/lf20_6p0k4z.json';
+  if (id === 'bicycle') return 'https://assets10.lottiefiles.com/packages/lf20_vnikly.json';
+  if (id === 'mountain') return 'https://assets1.lottiefiles.com/packages/lf20_3rwqz7.json';
+  
+  // لروابط IconScout المذكورة في الـ SOP
+  return `https://assets9.lottiefiles.com/packages/lf20_${id}.json`;
+};
 
 export const BEGINNER_PROGRAM: DayProgram[] = [
   {
     day: 1,
-    titleAr: "تمرين اليوم 1: القوة الأساسية",
+    titleAr: "اليوم 1: القوة الأساسية",
     type: 'workout',
     exercises: [
       { nameAr: "سكوات", sets: 3, reps: "10", restSeconds: 60, lottieId: "10469948" },
@@ -31,13 +42,13 @@ export const BEGINNER_PROGRAM: DayProgram[] = [
   },
   {
     day: 2,
-    titleAr: "راحة نشطة — مشي 15 دقيقة",
+    titleAr: "🚶 راحة نشطة — مشي 15 دقيقة",
     type: 'active_rest',
     exercises: []
   },
   {
     day: 3,
-    titleAr: "تمرين اليوم 3: توازن وقوة",
+    titleAr: "اليوم 3: توازن وقوة",
     type: 'workout',
     exercises: [
       { nameAr: "لانج متبادل", sets: 3, reps: "10 لكل رجل", restSeconds: 60, lottieId: "lunge" },
@@ -45,31 +56,87 @@ export const BEGINNER_PROGRAM: DayProgram[] = [
       { nameAr: "رفع كعب", sets: 3, reps: "15", restSeconds: 60, lottieId: "calf-raise" }
     ]
   },
-  // Add more days as needed based on the table provided
   {
     day: 4,
-    titleAr: "تمرين اليوم 4: الجزء العلوي والكور",
+    titleAr: "اليوم 4: الجزء العلوي والكور",
     type: 'workout',
     exercises: [
       { nameAr: "ضغط", sets: 3, reps: "8", restSeconds: 60, lottieId: "10469916" },
       { nameAr: "جسر أرداف", sets: 3, reps: "12", restSeconds: 60, lottieId: "glute-bridge" },
       { nameAr: "كرنش", sets: 3, reps: "15", restSeconds: 60, lottieId: "crunch" }
     ]
+  },
+  {
+    day: 5,
+    titleAr: "اليوم 5: سكوات وأرجل",
+    type: 'workout',
+    exercises: [
+      { nameAr: "سكوات", sets: 3, reps: "12", restSeconds: 60, lottieId: "10469948" },
+      { nameAr: "بلانك جانبي", sets: 3, reps: "20ث", restSeconds: 60, lottieId: "side-plank" },
+      { nameAr: "رفع أرجل", sets: 3, reps: "10", restSeconds: 60, lottieId: "10469934" }
+    ]
+  },
+  {
+    day: 7,
+    titleAr: "😴 راحة كاملة",
+    type: 'full_rest',
+    exercises: []
   }
 ];
 
-// Fallback logic for days not explicitly defined yet to ensure app doesn't crash
+export const INTERMEDIATE_PROGRAM: DayProgram[] = [
+  {
+    day: 1,
+    titleAr: "اليوم 1: قوة متوسطة",
+    type: 'workout',
+    exercises: [
+      { nameAr: "ضغط بطيء 3ث", sets: 4, reps: "10", restSeconds: 45, lottieId: "10469916" },
+      { nameAr: "بولغيريان سكوات", sets: 4, reps: "10 لكل رجل", restSeconds: 45, lottieId: "10469913" },
+      { nameAr: "بلانك", sets: 4, reps: "35ث", restSeconds: 45, lottieId: "plank" }
+    ]
+  }
+];
+
+export const ADVANCED_PROGRAM: DayProgram[] = [
+  {
+    day: 1,
+    titleAr: "اليوم 1: تحدي المتقدمين",
+    type: 'workout',
+    exercises: [
+      { nameAr: "ضغط تصفيق", sets: 4, reps: "8", restSeconds: 30, lottieId: "clap-push" },
+      { nameAr: "بيستول سكوات", sets: 4, reps: "6 لكل رجل", restSeconds: 30, lottieId: "10469912" },
+      { nameAr: "L-Sit", sets: 4, reps: "20ث", restSeconds: 30, lottieId: "L-sit" }
+    ]
+  }
+];
+
 export const getDayProgram = (level: string, day: number): DayProgram => {
-  const program = BEGINNER_PROGRAM.find(p => p.day === day);
+  let programSource = BEGINNER_PROGRAM;
+  if (level === 'intermediate') programSource = INTERMEDIATE_PROGRAM;
+  if (level === 'advanced') programSource = ADVANCED_PROGRAM;
+
+  const program = programSource.find(p => p.day === day);
   if (program) return program;
   
-  // Default structure for missing days
+  // منطق تكرار أو توليد أيام افتراضية إذا لم تكن موجودة في المصفوفة
+  const isRest = day % 7 === 0;
+  const isActiveRest = day % 7 === 2;
+
+  if (isRest) {
+    return { day, titleAr: "😴 راحة كاملة", type: 'full_rest', exercises: [] };
+  }
+  if (isActiveRest) {
+    return { day, titleAr: "🚶 راحة نشطة — مشي 20 دقيقة", type: 'active_rest', exercises: [] };
+  }
+
+  // افتراضي لليوم غير المعرف
   return {
-    day: day,
-    titleAr: day % 7 === 0 ? "😴 راحة كاملة" : `تمرين اليوم ${day}`,
-    type: day % 7 === 0 ? 'full_rest' : 'workout',
-    exercises: day % 7 === 0 ? [] : [
-       { nameAr: "سكوات", sets: 3, reps: "10", restSeconds: 60, lottieId: "10469948" },
+    day,
+    titleAr: `تمرين اليوم ${day}`,
+    type: 'workout',
+    exercises: [
+       { nameAr: "سكوات", sets: 3, reps: "12", restSeconds: 60, lottieId: "10469948" },
+       { nameAr: "ضغط", sets: 3, reps: "10", restSeconds: 60, lottieId: "10469916" },
        { nameAr: "بلانك", sets: 3, reps: "30ث", restSeconds: 60, lottieId: "plank" }
     ]
   };
