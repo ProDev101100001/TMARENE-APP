@@ -25,24 +25,28 @@ export default function Dashboard() {
       <main className="p-4 space-y-6">
         {/* Step & Calorie Mini Cards */}
         <div className="grid grid-cols-2 gap-4">
-          <Card className="bg-card border-none shadow-lg">
-            <CardContent className="p-4 flex flex-col items-center gap-2">
-              <Footprints className="h-6 w-6 text-primary" />
-              <div className="text-center">
-                <p className="text-2xl font-bold">4,200</p>
-                <p className="text-[10px] text-muted-foreground">خطوات</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card border-none shadow-lg">
-            <CardContent className="p-4 flex flex-col items-center gap-2">
-              <Flame className="h-6 w-6 text-accent" />
-              <div className="text-center">
-                <p className="text-2xl font-bold">1,450</p>
-                <p className="text-[10px] text-muted-foreground">سعرات</p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link href="/steps" className="block">
+            <Card className="bg-card border-none shadow-lg hover:bg-card/80 transition-all cursor-pointer">
+              <CardContent className="p-4 flex flex-col items-center gap-2">
+                <Footprints className="h-6 w-6 text-primary" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold">4,200</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">خطوات</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/nutrition" className="block">
+            <Card className="bg-card border-none shadow-lg hover:bg-card/80 transition-all cursor-pointer">
+              <CardContent className="p-4 flex flex-col items-center gap-2">
+                <Flame className="h-6 w-6 text-accent" />
+                <div className="text-center">
+                  <p className="text-2xl font-bold">1,450</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">سعرات</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Current Workout Status */}
@@ -62,7 +66,7 @@ export default function Dashboard() {
 
         {/* Nutrition Section */}
         <div className="space-y-3">
-          <h3 className="text-right font-bold text-sm">وجباتك اليوم</h3>
+          <h3 className="text-right font-bold text-sm text-muted-foreground uppercase">وجباتك اليوم</h3>
           <Link href="/nutrition">
             <Button variant="outline" className="w-full h-14 rounded-2xl border-dashed border-primary/30 bg-primary/5 text-primary gap-2 btn-animate">
               <Zap className="h-5 w-5" /> أضف وجبة 📷
