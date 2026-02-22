@@ -8,19 +8,20 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, MapPin, Play, Square, History } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { useUser, useDoc, useMemoFirebase } from "@/firebase"
+import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 
 export default function StepsPage() {
   const { user } = useUser()
+  const db = useFirestore()
   const [isTracking, setIsTracking] = useState(false)
   
   const today = new Date().toISOString().split('T')[0]
   
   const dailyLogRef = useMemoFirebase(() => {
-    if (!user) return null;
-    return doc(user.auth.app.firestore, 'users', user.uid, 'dailyLogs', today);
-  }, [user, today]);
+    if (!user || !db) return null;
+    return doc(db, 'users', user.uid, 'dailyLogs', today);
+  }, [user, db, today]);
 
   const { data: dailyLog } = useDoc(dailyLogRef);
 

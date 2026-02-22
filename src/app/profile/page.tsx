@@ -5,7 +5,7 @@ import { BottomNav } from "@/components/layout/bottom-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LogOut, ChevronLeft, Scale, Target, Ruler, User, Bell, Moon, Share2 } from "lucide-react"
-import { useUser, useDoc, useMemoFirebase, useAuth } from "@/firebase"
+import { useUser, useDoc, useMemoFirebase, useAuth, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { signOut } from "firebase/auth"
 import { cn } from "@/lib/utils"
@@ -14,12 +14,13 @@ import { useRouter } from "next/navigation"
 export default function Profile() {
   const { user } = useUser()
   const auth = useAuth()
+  const db = useFirestore()
   const router = useRouter()
 
   const profileRef = useMemoFirebase(() => {
-    if (!user) return null;
-    return doc(user.auth.app.firestore, 'users', user.uid, 'profile_data', user.uid);
-  }, [user]);
+    if (!user || !db) return null;
+    return doc(db, 'users', user.uid, 'profile_data', user.uid);
+  }, [user, db]);
 
   const { data: profile } = useDoc(profileRef);
 

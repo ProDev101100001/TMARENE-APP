@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 import { useUser, useFirestore } from '@/firebase'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc } from 'firebase/firestore'
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates'
 
 export default function Onboarding() {
@@ -37,12 +37,12 @@ export default function Onboarding() {
     if (step < totalSteps) {
       setStep(step + 1)
     } else {
-      if (!user) return
+      if (!user || !db) return
       
       setIsSaving(true)
-      const weight = parseFloat(formData.weight)
-      const height = parseFloat(formData.height)
-      const age = parseInt(formData.age)
+      const weight = parseFloat(formData.weight) || 70
+      const height = parseFloat(formData.height) || 170
+      const age = parseInt(formData.age) || 25
       
       // Basic BMI & TDEE calculation
       const bmi = weight / ((height / 100) ** 2)
@@ -50,22 +50,21 @@ export default function Onboarding() {
 
       const profileData = {
         id: user.uid,
+        name: user.displayName || 'بطل',
         age: age,
-        weightKg: weight,
+        weightBaselineKg: weight,
         heightCm: height,
         gender: formData.gender === 'male' ? 'ذكر' : 'أنثى',
         goal: formData.goal,
         activityLevel: formData.level,
-        weeklyWorkoutFrequency: parseInt(formData.frequency),
-        preferredSports: ['مشي'],
-        healthRestrictions: 'لا يوجد',
         bmi: parseFloat(bmi.toFixed(1)),
-        tdee: Math.round(tdee),
-        userWorkoutProgressId: 'current'
+        tdeeCalories: Math.round(tdee),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       }
 
       try {
-        const userRef = doc(db, 'users', user.uid, 'profile', user.uid);
+        const userRef = doc(db, 'users', user.uid, 'profile_data', user.uid);
         setDocumentNonBlocking(userRef, profileData, { merge: true });
         router.push('/dashboard')
       } catch (error) {

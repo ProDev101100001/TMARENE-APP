@@ -7,29 +7,30 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Flame, Activity } from "lucide-react"
 import Link from "next/link"
-import { useUser, useDoc, useMemoFirebase } from "@/firebase"
+import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Progress } from "@/components/ui/progress"
 
 export default function Dashboard() {
   const { user } = useUser()
+  const db = useFirestore()
   
   // الحصول على تاريخ اليوم بتنسيق YYYY-MM-DD
   const today = new Date().toISOString().split('T')[0]
   
   // جلب بيانات اليوم من Firestore
   const dailyLogRef = useMemoFirebase(() => {
-    if (!user) return null;
-    return doc(user.auth.app.firestore, 'users', user.uid, 'dailyLogs', today);
-  }, [user, today]);
+    if (!user || !db) return null;
+    return doc(db, 'users', user.uid, 'dailyLogs', today);
+  }, [user, db, today]);
 
   const { data: dailyLog } = useDoc(dailyLogRef);
 
   // جلب الملف الشخصي لمعرفة الهدف والـ Streak
   const profileRef = useMemoFirebase(() => {
-    if (!user) return null;
-    return doc(user.auth.app.firestore, 'users', user.uid, 'profile_data', user.uid);
-  }, [user]);
+    if (!user || !db) return null;
+    return doc(db, 'users', user.uid, 'profile_data', user.uid);
+  }, [user, db]);
 
   const { data: profile } = useDoc(profileRef);
 
