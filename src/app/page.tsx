@@ -4,14 +4,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Apple, Mail, Smartphone, Facebook, Loader2 } from 'lucide-react';
+import { Apple, Mail, Loader2 } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
-import { signInWithGoogle, signInWithApple, signInWithFacebook } from '@/lib/auth-providers';
+import { signInWithGoogle, signInWithApple, signInWithMicrosoft } from '@/lib/auth-providers';
 import { GoogleIcon } from '@/components/icons/GoogleIcon';
-import dynamic from 'next/dynamic';
+import { MicrosoftIcon } from '@/components/icons/MicrosoftIcon';
 import { useToast } from "@/hooks/use-toast";
-
-const Lottie = dynamic(() => import('lottie-react'), { ssr: false });
 
 export default function Home() {
   const router = useRouter();
@@ -98,21 +96,11 @@ export default function Home() {
 
           <Button 
             className="w-full h-14 rounded-2xl bg-card border border-white/10 text-base font-medium flex items-center justify-between px-6 btn-animate shadow-sm"
-            onClick={() => handleSignIn('Facebook', () => signInWithFacebook(auth))}
+            onClick={() => handleSignIn('Microsoft', () => signInWithMicrosoft(auth))}
             disabled={loadingProvider !== null}
           >
-            {loadingProvider === 'Facebook' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Facebook className="h-5 w-5 text-blue-500 fill-blue-500" />}
-            <span>تسجيل بـ Facebook</span>
-            <div className="w-5" />
-          </Button>
-
-          <Button 
-            className="w-full h-14 rounded-2xl bg-card border border-white/10 text-base font-medium flex items-center justify-between px-6 btn-animate shadow-sm"
-            onClick={() => router.push('/auth/phone')}
-            disabled={loadingProvider !== null}
-          >
-            <Smartphone className="h-5 w-5 text-primary" />
-            <span>رقم الجوال</span>
+             {loadingProvider === 'Microsoft' ? <Loader2 className="h-5 w-5 animate-spin" /> : <MicrosoftIcon className="h-5 w-5" />}
+            <span>تسجيل بـ Microsoft</span>
             <div className="w-5" />
           </Button>
 

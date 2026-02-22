@@ -18,6 +18,17 @@ export const signInWithGoogle = async (auth: Auth) => {
 };
 
 /**
+ * تسجيل الدخول عبر Microsoft
+ */
+export const signInWithMicrosoft = async (auth: Auth) => {
+  const provider = new OAuthProvider('microsoft.com');
+  provider.addScope('openid');
+  provider.addScope('email');
+  provider.addScope('profile');
+  return await signInWithPopup(auth, provider);
+};
+
+/**
  * تسجيل الدخول عبر Apple
  */
 export const signInWithApple = async (auth: Auth) => {

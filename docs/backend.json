@@ -597,11 +597,9 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous",
       "google.com",
-      "facebook.com",
-      "apple.com",
-      "phone"
+      "microsoft.com",
+      "apple.com"
     ]
   },
   "firestore": {
