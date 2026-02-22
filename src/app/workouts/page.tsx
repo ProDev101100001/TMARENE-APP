@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -107,7 +108,7 @@ export default function Workouts() {
                <div key={i} className={`w-3 h-3 rounded-full transition-colors ${i < currentSet ? 'bg-primary' : 'bg-muted'}`} />
              ))}
           </div>
-          <p className="text-[12px] text-muted-foreground mt-2">الهدف: {ex.reps} تكرار</p>
+          <p className="text-2xl font-bold text-white mt-6">الهدف: {ex.reps} تكرار</p>
         </main>
 
         <footer className="mt-8 space-y-4 pb-4">
