@@ -1,43 +1,54 @@
 
 "use client"
 
-import { useMemo } from "react"
+import { useState, useEffect } from "react"
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Flame, Activity } from "lucide-react"
+import { Flame, Activity, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Progress } from "@/components/ui/progress"
 
 export default function Dashboard() {
-  const { user } = useUser()
+  const { user, isUserLoading } = useUser()
   const db = useFirestore()
-  
-  // الحصول على تاريخ اليوم بتنسيق YYYY-MM-DD
-  const today = new Date().toISOString().split('T')[0]
+  const [today, setToday] = useState<string | null>(null)
+
+  useEffect(() => {
+    // تحديد التاريخ على العميل فقط لتجنب تعارض الـ Hydration
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
   
   // جلب بيانات اليوم من Firestore
   const dailyLogRef = useMemoFirebase(() => {
-    if (!user || !db) return null;
+    if (!user || !db || !today) return null;
     return doc(db, 'users', user.uid, 'dailyLogs', today);
   }, [user, db, today]);
 
-  const { data: dailyLog } = useDoc(dailyLogRef);
+  const { data: dailyLog, isLoading: isLogLoading } = useDoc(dailyLogRef);
 
-  // جلب الملف الشخصي لمعرفة الهدف والـ Streak
+  // جلب الملف الشخصي
   const profileRef = useMemoFirebase(() => {
     if (!user || !db) return null;
     return doc(db, 'users', user.uid, 'profile_data', user.uid);
   }, [user, db]);
 
-  const { data: profile } = useDoc(profileRef);
+  const { data: profile, isLoading: isProfileLoading } = useDoc(profileRef);
 
-  // قيم افتراضية تبدأ من الصفر
+  if (isUserLoading || !today) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  // قيم افتراضية
   const steps = dailyLog?.stepsCount || 0;
   const stepGoal = profile?.dailyStepGoal || 10000;
-  const progress = Math.min((steps / stepGoal) * 100, 100);
+  const progress = stepGoal > 0 ? Math.min((steps / stepGoal) * 100, 100) : 0;
   const calories = dailyLog?.caloriesConsumedTotal || 0;
   const distance = dailyLog?.distanceKm || 0;
   const streak = profile?.streak || 0;

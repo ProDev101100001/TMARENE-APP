@@ -1,33 +1,44 @@
 
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, MapPin, Play, Square, History } from "lucide-react"
+import { ChevronLeft, MapPin, Play, Square, History, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 
 export default function StepsPage() {
-  const { user } = useUser()
+  const { user, isUserLoading } = useUser()
   const db = useFirestore()
   const [isTracking, setIsTracking] = useState(false)
-  
-  const today = new Date().toISOString().split('T')[0]
+  const [today, setToday] = useState<string | null>(null)
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split('T')[0])
+  }, [])
   
   const dailyLogRef = useMemoFirebase(() => {
-    if (!user || !db) return null;
+    if (!user || !db || !today) return null;
     return doc(db, 'users', user.uid, 'dailyLogs', today);
   }, [user, db, today]);
 
-  const { data: dailyLog } = useDoc(dailyLogRef);
+  const { data: dailyLog, isLoading: isLogLoading } = useDoc(dailyLogRef);
+
+  if (isUserLoading || !today) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   const steps = dailyLog?.stepsCount || 0;
   const goal = 10000;
-  const progress = Math.min((steps / goal) * 100, 100);
+  const progress = goal > 0 ? Math.min((steps / goal) * 100, 100) : 0;
   const distance = dailyLog?.distanceKm || 0;
   const calories = dailyLog?.caloriesBurnedTotal || 0;
 
