@@ -1,0 +1,95 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 48% 6%; /* Deep Dark Background #0B1220 */
+    --foreground: 0 0% 100%;
+    --card: 222 47% 17%; /* Card Background #16213E */
+    --card-foreground: 0 0% 100%;
+    --popover: 222 47% 17%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 145 63% 49%; /* Primary Green #2ECC71 */
+    --primary-foreground: 220 48% 8%;
+    --secondary: 215 73% 22%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 222 47% 22%;
+    --muted-foreground: 215 20% 65%; /* #9CA3AF */
+    --accent: 38 92% 50%; /* Orange Streak #F39C12 */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 6 78% 57%; /* Red Warning #E74C3C */
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 47% 25%;
+    --input: 222 47% 25%;
+    --ring: 145 63% 49%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.rtl {
+  direction: rtl;
+}
+
+/* Typography Weights & Sizes as per SOP */
+.font-hero {
+  @apply text-[56px] font-bold leading-none tracking-tight;
+}
+
+.font-medium-title {
+  @apply text-[20px] font-medium;
+}
+
+.font-regular-body {
+  @apply text-[14px] font-normal;
+}
+
+/* Button Animations as per SOP */
+.btn-animate {
+  @apply transition-all duration-100 active:scale-95 active:opacity-80;
+}
+
+.btn-success-animate {
+  @apply transition-all duration-200 hover:scale-105;
+}
+
+/* Custom Transitions */
+.page-transition-fade {
+  @apply animate-in fade-in duration-150;
+}
+
+.page-transition-slide-right {
+  @apply animate-in slide-in-from-right-10 duration-250;
+}
+
+.page-transition-slide-up {
+  @apply animate-in slide-in-from-bottom-10 duration-250;
+}
+
+/* Progress Ring Animation */
+.progress-ring-ease {
+  transition: stroke-dashoffset 0.6s ease-out;
+}
+
+/* Shimmer/Skeleton Loading Effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-loading {
+  background: linear-gradient(90deg, #16213E 25%, #2D3748 50%, #16213E 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
