@@ -1,20 +1,34 @@
+
 "use client"
 
 import { useState } from 'react'
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, MapPin, Flame, Play, Square, History } from "lucide-react"
+import { ChevronLeft, MapPin, Play, Square, History } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useUser, useDoc, useMemoFirebase } from "@/firebase"
+import { doc } from "firebase/firestore"
 
 export default function StepsPage() {
+  const { user } = useUser()
   const [isTracking, setIsTracking] = useState(false)
-  const steps = 4200
-  const goal = 10000
-  const progress = (steps / goal) * 100
-  const distance = (steps * 0.00076).toFixed(1)
-  const calories = (steps * 0.04).toFixed(0)
+  
+  const today = new Date().toISOString().split('T')[0]
+  
+  const dailyLogRef = useMemoFirebase(() => {
+    if (!user) return null;
+    return doc(user.auth.app.firestore, 'users', user.uid, 'dailyLogs', today);
+  }, [user, today]);
+
+  const { data: dailyLog } = useDoc(dailyLogRef);
+
+  const steps = dailyLog?.stepsCount || 0;
+  const goal = 10000;
+  const progress = Math.min((steps / goal) * 100, 100);
+  const distance = dailyLog?.distanceKm || 0;
+  const calories = dailyLog?.caloriesBurnedTotal || 0;
 
   return (
     <div className="min-h-screen bg-background pb-24 rtl page-transition-slide-right">
@@ -24,7 +38,7 @@ export default function StepsPage() {
             <ChevronLeft className="h-6 w-6" />
           </Button>
         </Link>
-        <h1 className="font-medium-title">خطواتي اليوم</h1>
+        <h1 className="font-medium-title text-white">خطواتي اليوم</h1>
         <Button variant="ghost" size="icon" className="rounded-xl text-white">
           <History className="h-5 w-5" />
         </Button>
@@ -46,7 +60,7 @@ export default function StepsPage() {
                />
              </svg>
              <div className="text-center z-10 flex flex-col items-center">
-                <span className="font-hero">{steps.toLocaleString()}</span>
+                <span className="font-hero text-white">{steps.toLocaleString()}</span>
                 <span className="text-muted-foreground font-regular-body">خطوة</span>
                 <span className="text-primary text-[12px] font-bold mt-1">{progress.toFixed(0)}%</span>
              </div>
@@ -57,13 +71,13 @@ export default function StepsPage() {
         <section className="grid grid-cols-2 gap-4">
           <Card className="bg-card border-none rounded-2xl">
             <CardContent className="p-5 flex flex-col items-center gap-2">
-              <span className="text-2xl font-bold">{distance} km</span>
+              <span className="text-2xl font-bold text-white">{distance} km</span>
               <span className="text-[12px] text-muted-foreground">مسافة</span>
             </CardContent>
           </Card>
           <Card className="bg-card border-none rounded-2xl">
             <CardContent className="p-5 flex flex-col items-center gap-2">
-              <span className="text-2xl font-bold">{calories} 🔥</span>
+              <span className="text-2xl font-bold text-white">{calories} 🔥</span>
               <span className="text-[12px] text-muted-foreground">سعرات</span>
             </CardContent>
           </Card>
@@ -74,7 +88,7 @@ export default function StepsPage() {
           <div className="w-full aspect-video bg-card rounded-2xl border border-white/5 relative overflow-hidden flex items-center justify-center">
              <MapPin className="h-10 w-10 text-primary opacity-20" />
              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/50 pointer-events-none" />
-             <p className="absolute bottom-4 text-xs text-muted-foreground font-medium">مسارك اليوم موضح بالأخضر</p>
+             <p className="absolute bottom-4 text-xs text-muted-foreground font-medium">مسارك اليوم سيظهر هنا</p>
           </div>
         </section>
 
