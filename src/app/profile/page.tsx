@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Settings, LogOut, ChevronLeft, Scale, Target, Ruler, User, Bell, Dumbbell, UtensilsCrossed, Moon, Share2 } from "lucide-react"
 import { useUser } from "@/firebase"
+import { cn } from "@/lib/utils"
 
 export default function Profile() {
   const { user } = useUser()
