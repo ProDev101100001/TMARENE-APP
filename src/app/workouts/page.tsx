@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { BottomNav } from "@/components/layout/bottom-nav"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Card, CardContent } from "@/components/ui/card"
 import { ChevronRight, Play, Trophy, ArrowLeft, X, Dumbbell } from "lucide-react"
 import Link from "next/link"
 import dynamic from 'next/dynamic'
@@ -98,7 +99,6 @@ export default function Workouts() {
           <span className="font-hero text-primary">{activeTimer}</span>
           
           <div className="w-full aspect-square max-w-[350px] bg-card rounded-[2rem] flex items-center justify-center p-12 shadow-inner border border-white/5 mt-8 overflow-hidden">
-             {/* Lottie Animation placeholder */}
              <Dumbbell className="h-32 w-32 text-primary/10 animate-pulse" />
           </div>
 
