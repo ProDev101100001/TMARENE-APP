@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LogOut, ChevronLeft, Scale, Target, Ruler, User, Bell, Moon, Share2 } from "lucide-react"
 import { useUser, useDoc, useMemoFirebase, useAuth } from "@/firebase"
-import { doc, signOut } from "firebase/firestore"
+import { doc } from "firebase/firestore"
+import { signOut } from "firebase/auth"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
@@ -23,8 +24,12 @@ export default function Profile() {
   const { data: profile } = useDoc(profileRef);
 
   const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (
